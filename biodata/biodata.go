@@ -10,13 +10,20 @@ import (
 )
 
 type Bio struct {
-	Firstname string
-	Lastname  string
-	Email     string
-	Address   string
-	BirthDate string
-	Age       uint
-	CreatedAt time.Time
+	Firstname string    `json:"First name"`
+	Lastname  string    `json:"Last name"`
+	Email     string    `json:"Email"`
+	Address   string    `json:"Address"`
+	BirthDate string    `json:"Birthdate"`
+	Age       uint      `json:"age"`
+	CreatedAt time.Time `json:"Created At"`
+}
+
+type Admin struct {
+	EmailAdmin    string
+	PasswordAdmin string
+	CreatedAt     time.Time
+	Bio           Bio
 }
 
 func New(firstname string, lastname string, email string, address string, birthDate string, age uint) (*Bio, error) {
@@ -35,8 +42,29 @@ func New(firstname string, lastname string, email string, address string, birthD
 	}, nil
 }
 
+func NewAdmin(emailAdmin string, passwordAdmin string) (*Admin, error) {
+	return &Admin{
+		EmailAdmin:    " ",
+		PasswordAdmin: " ",
+		CreatedAt:     time.Now(),
+	}, nil
+}
+
 func (bio *Bio) OutputDisplay() {
 	fmt.Printf("First Name: %v\n Last Name: %v\n Email: %v\n Address: %v\n BirthDate: %v\n Age: %v\n", bio.Firstname, bio.Lastname, bio.Email, bio.Address, bio.BirthDate, bio.Age)
+}
+
+func (admin *Admin) Save() error {
+	fileName := strings.ReplaceAll(admin.EmailAdmin, " ", "_")
+	fileName = strings.ToLower(fileName) + ".json"
+
+	json, err := json.Marshal(admin)
+
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(fileName, json, 0644)
 }
 
 func (bio *Bio) Save() error {
